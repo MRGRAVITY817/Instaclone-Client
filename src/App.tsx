@@ -1,24 +1,45 @@
-import { useReactiveVar } from "@apollo/client";
-import { HashRouter as Router, Redirect, Route, Switch } from "react-router-dom";
 import Home from "./screens/Home";
 import Login from "./screens/Login";
-import { isLoggedInVar } from "./lib/apollo";
+import { ApolloProvider, useReactiveVar } from "@apollo/client";
+import {
+  HashRouter as Router,
+  Redirect,
+  Route,
+  Switch,
+} from "react-router-dom";
+import { client, darkModeVar, isLoggedInVar } from "./lib/apollo";
+import { ThemeProvider } from "styled-components";
+import { darkTheme, lightTheme, GlobalStyles } from "./style";
+import SignUp from "./screens/SignUp";
+import routes from "./screens/routes";
+import { HelmetProvider } from "react-helmet-async";
 
 const App = () => {
   const isLoggedIn = useReactiveVar(isLoggedInVar);
+  const darkMode = useReactiveVar(darkModeVar);
   return (
-    <div>
-      <Router>
-        <Switch>
-          <Route path="/" exact>
-            {isLoggedIn ? <Home /> : <Login />}
-          </Route>
-          <Route>
-            <Redirect to="/" />
-          </Route>
-        </Switch>
-      </Router>
-    </div>
+    <ApolloProvider client={client}>
+      <HelmetProvider>
+        <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
+          <GlobalStyles />
+          <Router>
+            <Switch>
+              <Route path={routes.home} exact>
+                {isLoggedIn ? <Home /> : <Login />}
+              </Route>
+              {!isLoggedIn ? (
+                <Route path={routes.signUp} exact>
+                  <SignUp />
+                </Route>
+              ) : null}
+              <Route>
+                <Redirect to={routes.home} />
+              </Route>
+            </Switch>
+          </Router>
+        </ThemeProvider>
+      </HelmetProvider>
+    </ApolloProvider>
   );
 };
 
