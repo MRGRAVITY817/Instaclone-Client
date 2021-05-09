@@ -18,6 +18,7 @@ import gql from "graphql-tag";
 import { useMutation } from "@apollo/client";
 import { login, loginVariables } from "../__generated__/login";
 import { useState } from "react";
+import { logUserIn } from "../lib/apollo";
 
 const FacebookLogin = styled.div`
   color: #385285;
@@ -58,7 +59,7 @@ const Login = () => {
       setLoginError("");
     }
     if (token) {
-      console.log(token);
+      logUserIn(token);
     }
   };
 
