@@ -17,6 +17,7 @@ import { FormError } from "../components/auth/FormError";
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/client";
 import { login, loginVariables } from "../__generated__/login";
+import { useState } from "react";
 
 const FacebookLogin = styled.div`
   color: #385285;
@@ -29,7 +30,6 @@ const FacebookLogin = styled.div`
 interface LoginForm {
   username: string;
   password: string;
-  result: string;
 }
 
 const LOGIN_MUTATION = gql`
@@ -43,25 +43,25 @@ const LOGIN_MUTATION = gql`
 `;
 
 const Login = () => {
-  const {
-    register,
-    handleSubmit,
-    formState,
-    getValues,
-    setError,
-  } = useForm<LoginForm>({
+  const { register, handleSubmit, formState, getValues } = useForm<LoginForm>({
     mode: "onChange",
   });
+
+  const [loginError, setLoginError] = useState<string>("");
   const onCompleted = (data: login) => {
     const {
       login: { ok, error, token },
     } = data;
     if (!ok && error) {
-      setError("result", {
-        message: error,
-      });
+      setLoginError(error);
+    } else {
+      setLoginError("");
+    }
+    if (token) {
+      console.log(token);
     }
   };
+
   const [loginMutation, { data, loading }] = useMutation<login, loginVariables>(
     LOGIN_MUTATION,
     {
@@ -105,7 +105,7 @@ const Login = () => {
             disabled={!formState.isValid || loading}
             value={loading ? "Loading..." : "Log in"}
           />
-          <FormError message={formState.errors.result?.message || ""} />
+          <FormError message={loginError} />
         </form>
         <Separator>Or</Separator>
         <FacebookLogin>
