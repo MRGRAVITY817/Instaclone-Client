@@ -14,6 +14,9 @@ import routes from "./routes";
 import { PageTitle } from "../components/PageTitle";
 import { useForm } from "react-hook-form";
 import { FormError } from "../components/auth/FormError";
+import gql from "graphql-tag";
+import { useMutation } from "@apollo/client";
+import { login, loginVariables } from "../__generated__/login";
 
 const FacebookLogin = styled.div`
   color: #385285;
@@ -26,14 +29,50 @@ const FacebookLogin = styled.div`
 interface LoginForm {
   username: string;
   password: string;
+  result: string;
 }
 
+const LOGIN_MUTATION = gql`
+  mutation login($username: String!, $password: String!) {
+    login(username: $username, password: $password) {
+      ok
+      token
+      error
+    }
+  }
+`;
+
 const Login = () => {
-  const { register, handleSubmit, formState } = useForm<LoginForm>({
+  const {
+    register,
+    handleSubmit,
+    formState,
+    getValues,
+    setError,
+  } = useForm<LoginForm>({
     mode: "onChange",
   });
-  const onSubmitValid = (data: any) => {
-    console.log(data);
+  const onCompleted = (data: login) => {
+    const {
+      login: { ok, error, token },
+    } = data;
+    if (!ok && error) {
+      setError("result", {
+        message: error,
+      });
+    }
+  };
+  const [loginMutation, { data, loading }] = useMutation<login, loginVariables>(
+    LOGIN_MUTATION,
+    {
+      onCompleted,
+    }
+  );
+  const onSubmitValid = () => {
+    const { username, password } = getValues();
+    loginMutation({
+      variables: { username, password },
+    });
   };
   const onSubmitInvalid = (data: any) => {
     console.log(data);
@@ -63,8 +102,10 @@ const Login = () => {
           <Button
             type="submit"
             placeholder="Log in"
-            disabled={!formState.isValid}
+            disabled={!formState.isValid || loading}
+            value={loading ? "Loading..." : "Log in"}
           />
+          <FormError message={formState.errors.result?.message || ""} />
         </form>
         <Separator>Or</Separator>
         <FacebookLogin>
