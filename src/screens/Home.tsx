@@ -4,36 +4,32 @@ const Home = () => {
   return (
     <div
       style={{
-        flex: `1`,
+        display: `flex`,
+        flexDirection: `column`,
         justifyItems: `center`,
         justifyContent: `center`,
-        backgroundColor: "green",
+        backgroundColor: "lightGray",
         padding: `200px 200px`,
       }}
     >
       <h1
         style={{
-          flex: `1`,
-          color: "white",
+          color: "black",
           fontSize: "4em",
           textAlign: "center",
           border: `2 white`,
+          marginBottom: `20px`,
         }}
       >
         Wow you logged in!
       </h1>
       <button
         style={{
-          flex: `1`,
           backgroundColor: `black`,
           color: `white`,
-          appearance: `none`,
-          MozAppearance: `none`,
-          WebkitAppearance: `none`,
           fontStyle: `italic`,
           fontSize: `2em`,
           borderWidth: `3px`,
-          borderColor: `yellow`,
         }}
         onClick={() => logUserOut()}
       >
