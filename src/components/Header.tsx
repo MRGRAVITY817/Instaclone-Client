@@ -4,16 +4,19 @@ import { faHome } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { useMe } from "../hooks/useMe";
 import { isLoggedInVar } from "../lib/apollo";
 import routes from "../screens/routes";
+import { Avatar } from "./Avatar";
 
 const StyledHeader = styled.header`
   width: 100%;
   border-bottom: 1px solid ${(props) => props.theme.borderColor};
-  padding: 18px 0px;
+  padding: 12px 12px;
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: white;
 `;
 const Wrapper = styled.div`
   max-width: 930px;
@@ -36,8 +39,13 @@ const Button = styled.span`
   font-weight: 600;
 `;
 
+const IconsContainer = styled.div`
+  display: flex;
+`;
+
 export const Header = () => {
   const isLoggedIn = useReactiveVar(isLoggedInVar);
+  const data = useMe();
   return (
     <StyledHeader>
       <Wrapper>
@@ -46,7 +54,7 @@ export const Header = () => {
         </Column>
         <Column>
           {isLoggedIn ? (
-            <>
+            <IconsContainer>
               <Icon>
                 <FontAwesomeIcon icon={faHome} size="lg" />
               </Icon>
@@ -54,9 +62,13 @@ export const Header = () => {
                 <FontAwesomeIcon icon={faCompass} size="lg" />
               </Icon>
               <Icon>
-                <FontAwesomeIcon icon={faUser} size="lg" />
+                {isLoggedIn ? (
+                  <Avatar url={data?.me?.avatar!} />
+                ) : (
+                  <FontAwesomeIcon icon={faUser} size="lg" />
+                )}
               </Icon>
-            </>
+            </IconsContainer>
           ) : (
             <Link to={routes.home}>
               <Button>Login</Button>

@@ -1,41 +1,31 @@
-import { logUserOut } from "../lib/apollo";
+import styled from "styled-components";
+import { Photo } from "../components/Photo";
+import { FatText } from "../components/shared/FatText";
+import { useFeed } from "../hooks/useFeed";
+
+export const Username = styled(FatText)`
+  margin-left: 5px;
+`;
+
+const Feeds = styled.div`
+  display: grid;
+  grid-auto-flow: row;
+  justify-items: center;
+  padding: 12px;
+`;
 
 const Home = () => {
+  const { data, loading } = useFeed();
   return (
-    <div
-      style={{
-        display: `flex`,
-        flexDirection: `column`,
-        justifyItems: `center`,
-        justifyContent: `center`,
-        backgroundColor: "lightGray",
-        padding: `200px 200px`,
-      }}
-    >
-      <h1
-        style={{
-          color: "black",
-          fontSize: "4em",
-          textAlign: "center",
-          border: `2 white`,
-          marginBottom: `20px`,
-        }}
-      >
-        Wow you logged in!
-      </h1>
-      <button
-        style={{
-          backgroundColor: `black`,
-          color: `white`,
-          fontStyle: `italic`,
-          fontSize: `2em`,
-          borderWidth: `3px`,
-        }}
-        onClick={() => logUserOut()}
-      >
-        Log out
-      </button>
-    </div>
+    <Feeds>
+      {loading ? (
+        <h1>Loading...</h1>
+      ) : (
+        data?.seeFeed.feeds?.map((photo) =>
+          photo ? <Photo key={photo?.id} photo={photo} /> : null
+        )
+      )}
+    </Feeds>
   );
 };
 

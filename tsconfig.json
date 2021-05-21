@@ -21,9 +21,13 @@
     "jsx": "react-jsx"
   },
   "include": [
-    "src"
+    "src/__generated__",
+    "src/components",
+    "src/screens",
+    "src/lib"
   ],
   "exclude": [
+    "node_modules",
     "src/__generated__/globalTypes.ts"
   ]
 }
