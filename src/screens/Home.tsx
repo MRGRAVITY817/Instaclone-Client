@@ -8,10 +8,7 @@ export const Username = styled(FatText)`
 `;
 
 const Feeds = styled.div`
-  display: grid;
-  grid-auto-flow: row;
-  justify-items: center;
-  padding: 12px;
+  padding: 0px 20px;
 `;
 
 const Home = () => {

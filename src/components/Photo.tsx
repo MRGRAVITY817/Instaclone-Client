@@ -12,7 +12,6 @@ import {
   faPaperPlane,
 } from "@fortawesome/free-regular-svg-icons";
 import { useToggleLike } from "../hooks/useToggleLike";
-import { ToggleLike } from "../__generated__/ToggleLike";
 
 const PhotoContainer = styled.div`
   background-color: white;
@@ -52,6 +51,22 @@ const PhotoActions = styled.div`
 
 const PhotoAction = styled.div`
   margin-right: 10px;
+`;
+
+const Comments = styled.div`
+  margin-top: 20px;
+`;
+const Comment = styled.div``;
+
+const CommentCaption = styled.span`
+  margin-left: 4px;
+`;
+
+const CommentCount = styled.span`
+  opacity: 0.7;
+  margin: 10px 0px;
+  display: block;
+  font-size: 10px;
 `;
 
 const Likes = styled(FatText)`
@@ -101,6 +116,17 @@ export const Photo: React.FC<PhotoProps> = ({ photo }) => {
           </div>
         </PhotoActions>
         <Likes>{photo.likes === 1 ? "1 like" : `${photo.likes} likes`}</Likes>
+        <Comments>
+          <Comment>
+            <FatText>{photo.user.username}</FatText>
+            <CommentCaption>{photo.caption}</CommentCaption>
+          </Comment>
+          <CommentCount>
+            {photo.commentNumber === 1
+              ? `1 comment`
+              : `${photo.commentNumber} comments`}
+          </CommentCount>
+        </Comments>
       </PhotoData>
     </PhotoContainer>
   );

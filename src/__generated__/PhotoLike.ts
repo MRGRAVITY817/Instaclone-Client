@@ -10,4 +10,5 @@
 export interface PhotoLike {
   __typename: "Photo";
   isLiked: boolean;
+  likes: number;
 }
