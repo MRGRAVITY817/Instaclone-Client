@@ -26,9 +26,9 @@ export const Comments: React.FC<CommentsProps> = ({ photo }) => {
           ? `1 comment`
           : `${photo.commentNumber} comments`}
       </CommentCount>
-      {photo.comments?.map((comment) => (
+      {photo.comments?.map((comment, index) => (
         <Comment
-          key={comment?.id}
+          key={index}
           author={comment?.user.username!}
           payload={comment?.payload!}
         />
