@@ -4,6 +4,8 @@ import { Comment } from "./Comment";
 import { useForm } from "react-hook-form";
 import { useCreateComment } from "../hooks/useCreateComment";
 import { CreateComment } from "../__generated__/CreateComment";
+import { MutationUpdaterFn } from "@apollo/client";
+import { useMe } from "../hooks/useMe";
 
 const CommentsContainer = styled.div`
   margin-top: 20px;
@@ -16,6 +18,20 @@ const CommentCount = styled.span`
   font-size: 10px;
 `;
 
+const PostCommentContainer = styled.div`
+  margin-top: 10px;
+  padding-top: 15px;
+  padding-bottom: 10px;
+  border-top: 1px solid ${(props) => props.theme.borderColor}; ;
+`;
+
+const PostCommentInput = styled.input`
+  width: 100%;
+  &::placeholder {
+    font-size: 12px;
+  }
+`;
+
 interface CommentsProps {
   photo: SeeAllFeeds_seeFeed_feeds;
 }
@@ -25,19 +41,41 @@ interface CommentsForm {
 }
 
 export const Comments: React.FC<CommentsProps> = ({ photo }) => {
-  const onCompleted = (data: CreateComment) => {
-    console.log(data.createComment.ok);
+  const userData = useMe();
+  const update: MutationUpdaterFn<CreateComment> = (cache, result) => {
+    const { ok, id } = result.data?.createComment!;
+    if (ok && userData?.me) {
+      const { payload } = getValues();
+      setValue("payload", "");
+      const newComment = {
+        __typename: "Comment",
+        createdAt: Date.now() + "",
+        id,
+        isMine: true,
+        payload,
+        user: {
+          ...userData?.me,
+        },
+      };
+      cache.modify({
+        id: `Photo:${photo.id}`,
+        fields: {
+          comments: (prev) => [...prev, newComment],
+          commentNumber: (prev) => prev + 1,
+        },
+      });
+    }
   };
-  const [createCommentMutation, { loading }] = useCreateComment(onCompleted);
+  const [createCommentMutation, { loading }] = useCreateComment(update);
 
-  const { register, handleSubmit, setValue } = useForm<CommentsForm>();
+  const { register, handleSubmit, setValue, getValues } =
+    useForm<CommentsForm>();
   const onValid = (data: CommentsForm) => {
     const { payload } = data;
     if (loading) {
       return;
     }
     createCommentMutation({ variables: { photoId: photo.id, payload } });
-    setValue("payload", "");
   };
 
   return (
@@ -55,15 +93,15 @@ export const Comments: React.FC<CommentsProps> = ({ photo }) => {
           payload={comment?.payload!}
         />
       ))}
-      <div>
+      <PostCommentContainer>
         <form onSubmit={handleSubmit(onValid)}>
-          <input
+          <PostCommentInput
             type="text"
             placeholder="Write a comment..."
             {...register("payload", { required: true })}
           />
         </form>
-      </div>
+      </PostCommentContainer>
     </CommentsContainer>
   );
 };

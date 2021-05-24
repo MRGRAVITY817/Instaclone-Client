@@ -1,4 +1,4 @@
-import { gql, useMutation } from "@apollo/client";
+import { gql, MutationUpdaterFn, useMutation } from "@apollo/client";
 import {
   CreateComment,
   CreateCommentVariables,
@@ -8,17 +8,16 @@ const CREATE_COMMENT_MUTATION = gql`
     createComment(photoId: $photoId, payload: $payload) {
       ok
       error
+      id
     }
   }
 `;
 
-export const useCreateComment = (
-  onCompleted: (data: CreateComment) => void
-) => {
+export const useCreateComment = (update: MutationUpdaterFn<CreateComment>) => {
   return useMutation<CreateComment, CreateCommentVariables>(
     CREATE_COMMENT_MUTATION,
     {
-      onCompleted,
+      update,
     }
   );
 };
