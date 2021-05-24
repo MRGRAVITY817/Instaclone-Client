@@ -4,7 +4,7 @@ import { Comment } from "./Comment";
 import { useForm } from "react-hook-form";
 import { useCreateComment } from "../hooks/useCreateComment";
 import { CreateComment } from "../__generated__/CreateComment";
-import { MutationUpdaterFn } from "@apollo/client";
+import { gql, MutationUpdaterFn } from "@apollo/client";
 import { useMe } from "../hooks/useMe";
 
 const CommentsContainer = styled.div`
@@ -57,10 +57,27 @@ export const Comments: React.FC<CommentsProps> = ({ photo }) => {
           ...userData?.me,
         },
       };
+      // Add comment to cache
+      const newCacheComment = cache.writeFragment({
+        data: newComment,
+        fragment: gql`
+          fragment CommentParts on Comment {
+            id
+            createdAt
+            isMine
+            payload
+            user {
+              username
+              avatar
+            }
+          }
+        `,
+      });
+      // Modify the cache storage
       cache.modify({
         id: `Photo:${photo.id}`,
         fields: {
-          comments: (prev) => [...prev, newComment],
+          comments: (prev) => [...prev, newCacheComment],
           commentNumber: (prev) => prev + 1,
         },
       });
@@ -91,6 +108,8 @@ export const Comments: React.FC<CommentsProps> = ({ photo }) => {
           key={index}
           author={comment?.user.username!}
           payload={comment?.payload!}
+          id={comment?.id}
+          isMine={comment?.isMine}
         />
       ))}
       <PostCommentContainer>
