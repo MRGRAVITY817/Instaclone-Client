@@ -13,6 +13,7 @@ import {
 } from "@fortawesome/free-regular-svg-icons";
 import { useToggleLike } from "../hooks/useToggleLike";
 import { Comments } from "./Comments";
+import { Link } from "react-router-dom";
 
 const PhotoContainer = styled.div`
   background-color: white;
@@ -72,8 +73,12 @@ export const Photo: React.FC<PhotoProps> = ({ photo }) => {
   return (
     <PhotoContainer key={photo.id}>
       <PhotoHeader>
-        <Avatar url={photo.user?.avatar || ""} />
-        <Username>{photo.user?.username}</Username>
+        <Link to={`/users/${photo.user.username}`}>
+          <Avatar url={photo.user?.avatar || ""} />
+        </Link>
+        <Link to={`/users/${photo.user.username}`}>
+          <Username>{photo.user?.username}</Username>
+        </Link>
       </PhotoHeader>
       <PhotoFile src={photo.file} />
       <PhotoData>

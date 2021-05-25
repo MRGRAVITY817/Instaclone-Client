@@ -21,7 +21,6 @@ const CommentCaption = styled.span`
     }
   }
 `;
-
 interface CommentProps {
   author: string;
   payload: string;
@@ -58,7 +57,9 @@ export const Comment: React.FC<CommentProps> = ({
   };
   return (
     <StyledComment>
-      <FatText>{author}</FatText>
+      <Link to={`/users/${author}`}>
+        <FatText>{author}</FatText>
+      </Link>
       <CommentCaption>
         {payload.split(" ").map((word, index) =>
           /#[\w]+/.test(word) ? (

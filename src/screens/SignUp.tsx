@@ -79,7 +79,7 @@ const SignUp = () => {
       });
     }
   };
-  const [createAccountMutation, { data, loading }] = useMutation<
+  const [createAccountMutation, { loading }] = useMutation<
     createAccountMutation,
     createAccountMutationVariables
   >(CREATE_ACCOUNT_MUTATION, { onCompleted });

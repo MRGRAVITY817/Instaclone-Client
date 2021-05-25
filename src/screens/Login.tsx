@@ -78,7 +78,7 @@ const Login = () => {
     }
   };
 
-  const [loginMutation, { data, loading }] = useMutation<login, loginVariables>(
+  const [loginMutation, { loading }] = useMutation<login, loginVariables>(
     LOGIN_MUTATION,
     {
       onCompleted,

@@ -1,4 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
+import { COMMENT_FRAGMENT } from "../lib/fragments/comments.fragments";
+import { PHOTO_FRAGMENT } from "../lib/fragments/photo.fragments";
 import { SeeAllFeeds } from "../__generated__/SeeAllFeeds";
 
 export const FEED_QUERY = gql`
@@ -7,31 +9,23 @@ export const FEED_QUERY = gql`
       ok
       error
       feeds {
-        id
+        ...PhotoFragment
         user {
           username
           avatar
         }
-        file
         caption
         likes
         comments {
-          id
-          user {
-            username
-            avatar
-          }
-          payload
-          isMine
-          createdAt
+          ...CommentFragment
         }
-        commentNumber
         createdAt
         isMine
-        isLiked
       }
     }
   }
+  ${PHOTO_FRAGMENT}
+  ${COMMENT_FRAGMENT}
 `;
 
 export const useFeed = () => {
