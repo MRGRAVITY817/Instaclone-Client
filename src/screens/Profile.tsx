@@ -7,6 +7,9 @@ import { useProfile } from "../hooks/useProfile";
 import { SeeProfile_seeProfile } from "../__generated__/SeeProfile";
 import { Button } from "../components/auth/Button";
 import { PageTitle } from "../components/PageTitle";
+import { useToggleFollow } from "../hooks/useToggleFollow";
+import { MutationUpdaterFn } from "@apollo/client";
+import { ToggleFollow } from "../__generated__/ToggleFollow";
 
 const Header = styled.div`
   display: flex;
@@ -99,17 +102,44 @@ const ProfileBtn = styled(Button).attrs({
 interface ProfileParams {
   username: string;
 }
+
 const Profile = () => {
+  const update: MutationUpdaterFn<ToggleFollow> = (cache, result) => {
+    const { ok, following } = result.data?.toggleFollow!;
+    if (!ok) return;
+    cache.modify({
+      id: `User:${username}`,
+      fields: {
+        isFollowing: (prev) => !prev,
+        totalFollowers: (prev) => (following ? prev + 1 : prev - 1),
+      },
+    });
+  };
+  const [toggleFollowMutation] = useToggleFollow(update);
+
   const { username } = useParams<ProfileParams>();
   const { data, loading } = useProfile(username);
   const getButton = (seeProfile: SeeProfile_seeProfile) => {
     const { isMe, isFollowing } = seeProfile;
-    // If the profile page is mine
-    if (isMe) return "Edit Profile";
-    // If the profile page is others
-    if (isFollowing) return "Unfollow";
-    else return "Follow";
+    if (isMe) return <ProfileBtn>Edit Profile</ProfileBtn>;
+    if (isFollowing)
+      return (
+        <ProfileBtn
+          onClick={() => toggleFollowMutation({ variables: { username } })}
+        >
+          Unfollow
+        </ProfileBtn>
+      );
+    else
+      return (
+        <ProfileBtn
+          onClick={() => toggleFollowMutation({ variables: { username } })}
+        >
+          Follow
+        </ProfileBtn>
+      );
   };
+
   return (
     <div>
       <PageTitle
@@ -122,9 +152,7 @@ const Profile = () => {
         <Column>
           <Row>
             <Username>{data?.seeProfile?.username}</Username>
-            {data?.seeProfile ? (
-              <ProfileBtn>{getButton(data.seeProfile)}</ProfileBtn>
-            ) : null}
+            {data?.seeProfile ? getButton(data.seeProfile) : null}
           </Row>
           <Row>
             <List>

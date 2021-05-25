@@ -2,7 +2,7 @@ import { gql, useQuery } from "@apollo/client";
 import { PHOTO_FRAGMENT } from "../lib/fragments/photo.fragments";
 import { SeeProfile, SeeProfileVariables } from "../__generated__/SeeProfile";
 
-const SEE_PROFILE_QUERY = gql`
+export const SEE_PROFILE_QUERY = gql`
   query SeeProfile($username: String!) {
     seeProfile(username: $username) {
       firstName
