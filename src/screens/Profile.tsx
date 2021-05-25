@@ -10,6 +10,7 @@ import { PageTitle } from "../components/PageTitle";
 import { useToggleFollow } from "../hooks/useToggleFollow";
 import { MutationUpdaterFn } from "@apollo/client";
 import { ToggleFollow } from "../__generated__/ToggleFollow";
+import { useMe } from "../hooks/useMe";
 
 const Header = styled.div`
   display: flex;
@@ -104,6 +105,9 @@ interface ProfileParams {
 }
 
 const Profile = () => {
+  const { username } = useParams<ProfileParams>();
+  const meData = useMe();
+
   const update: MutationUpdaterFn<ToggleFollow> = (cache, result) => {
     const { ok, following } = result.data?.toggleFollow!;
     if (!ok) return;
@@ -114,10 +118,15 @@ const Profile = () => {
         totalFollowers: (prev) => (following ? prev + 1 : prev - 1),
       },
     });
+    cache.modify({
+      id: `User:${meData?.me?.username}`,
+      fields: {
+        totalFollowing: (prev) => (following ? prev + 1 : prev - 1),
+      },
+    });
   };
   const [toggleFollowMutation] = useToggleFollow(update);
 
-  const { username } = useParams<ProfileParams>();
   const { data, loading } = useProfile(username);
   const getButton = (seeProfile: SeeProfile_seeProfile) => {
     const { isMe, isFollowing } = seeProfile;
