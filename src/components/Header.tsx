@@ -1,4 +1,5 @@
 import { useReactiveVar } from "@apollo/client";
+import { faInstagram } from "@fortawesome/free-brands-svg-icons";
 import { faCompass } from "@fortawesome/free-regular-svg-icons";
 import { faHome } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -41,6 +42,7 @@ const Button = styled.span`
 
 const IconsContainer = styled.div`
   display: flex;
+  align-items: center;
 `;
 
 export const Header = () => {
@@ -50,7 +52,7 @@ export const Header = () => {
     <StyledHeader>
       <Wrapper>
         <Column>
-          <FontAwesomeIcon icon={faHome} size="lg" />
+          <FontAwesomeIcon icon={faInstagram} size="2x" />
         </Column>
         <Column>
           {isLoggedIn ? (

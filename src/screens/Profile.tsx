@@ -98,7 +98,11 @@ const Icon = styled.span`
 
 const ProfileBtn = styled(Button).attrs({
   as: "span",
-})``;
+})`
+  margin-left: 20px;
+  margin-top: 0px;
+  cursor: pointer;
+`;
 
 interface ProfileParams {
   username: string;
