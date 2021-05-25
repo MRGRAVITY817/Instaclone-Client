@@ -4,6 +4,9 @@ import { useParams } from "react-router";
 import styled from "styled-components";
 import { FatText } from "../components/shared/FatText";
 import { useProfile } from "../hooks/useProfile";
+import { SeeProfile_seeProfile } from "../__generated__/SeeProfile";
+import { Button } from "../components/auth/Button";
+import { PageTitle } from "../components/PageTitle";
 
 const Header = styled.div`
   display: flex;
@@ -26,6 +29,8 @@ const Username = styled.h3`
 const Row = styled.div`
   margin-bottom: 20px;
   font-size: 16px;
+  display: flex;
+  align-items: center;
 `;
 
 const List = styled.ul`
@@ -87,19 +92,39 @@ const Icon = styled.span`
   }
 `;
 
+const ProfileBtn = styled(Button).attrs({
+  as: "span",
+})``;
+
 interface ProfileParams {
   username: string;
 }
 const Profile = () => {
   const { username } = useParams<ProfileParams>();
-  const { data } = useProfile(username);
+  const { data, loading } = useProfile(username);
+  const getButton = (seeProfile: SeeProfile_seeProfile) => {
+    const { isMe, isFollowing } = seeProfile;
+    // If the profile page is mine
+    if (isMe) return "Edit Profile";
+    // If the profile page is others
+    if (isFollowing) return "Unfollow";
+    else return "Follow";
+  };
   return (
     <div>
+      <PageTitle
+        title={
+          loading ? "Loading..." : `${data?.seeProfile?.username}'s Profile`
+        }
+      />
       <Header>
         <Avatar src={data?.seeProfile?.avatar!} />
         <Column>
           <Row>
             <Username>{data?.seeProfile?.username}</Username>
+            {data?.seeProfile ? (
+              <ProfileBtn>{getButton(data.seeProfile)}</ProfileBtn>
+            ) : null}
           </Row>
           <Row>
             <List>
@@ -127,7 +152,7 @@ const Profile = () => {
       </Header>
       <Grid>
         {data?.seeProfile?.photos?.map((photo) => (
-          <Photo bg={photo?.file!}>
+          <Photo key={photo?.id} bg={photo?.file!}>
             <Icons>
               <Icon>
                 <FontAwesomeIcon icon={faHeart} />
